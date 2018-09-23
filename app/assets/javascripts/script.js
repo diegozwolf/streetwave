@@ -75,7 +75,7 @@ $(function() {
             }
         }
         measureSide( car, car_1, spaces)
-        // $.get( "http://157.253.226.176/", spaces );
+        $.get( "http://157.253.226.176/", spaces );
         if (spaces.motor1 == 0) {
           $('.p-up').css('background', '#481a02')
         }
@@ -138,6 +138,7 @@ $(function() {
 
        if ( collision( car, danger_zone)  ) {
          if (resp) {
+           $.get( "http://157.253.226.176/alert" );
            $('.data_info').empty();
            $.ajax({
              url: info,
