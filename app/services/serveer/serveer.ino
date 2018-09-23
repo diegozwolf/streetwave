@@ -11,7 +11,7 @@ ESP8266WebServer server(80);    // Create a webserver object that listens for HT
 void handleRoot();              // function prototypes for HTTP handlers
 void handleMotors();
 void handleNotFound();
-int pwm_value,motor1=5;
+int pwm_value,motor1=16,motor2=5,motor3=4,motor4=0;
 
 
 void setup(void){
@@ -68,6 +68,12 @@ void handleMotors(){
   JsonObject& jObject=jBuffer.parseObject(data);
   pwm_value = jObject["motor1"];
   analogWrite(motor1,pwm_value);
-  Serial.println(pwm_value);
+  pwm_value = jObject["motor2"];
+  analogWrite(motor2,pwm_value);
+  pwm_value = jObject["motor3"];
+  analogWrite(motor3,pwm_value);
+  pwm_value = jObject["motor4"];
+  analogWrite(motor4,pwm_value);
+  
   server.send(204,"");  
   }
