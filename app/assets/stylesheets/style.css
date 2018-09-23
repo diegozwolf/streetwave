@@ -9,7 +9,7 @@ body {
 #container{
     position: relative;
     height: 90vh;
-    width: 40%;
+    width: 35%;
     left: 35%;
     margin-top: 20px;;
     background-color: #292929;
@@ -160,15 +160,17 @@ body {
 .small_text{
     font-size: 15px;
 }
-#score_div{
-    position: absolute;
-    margin-top: 20%;
-    margin-left: 10%;
-    font-size: 35px;
-    background-color: white;
-    color: #454545;
-    padding: 10px;
-    box-shadow: 4px 4px 0px 1px #808080;
+#data_div{
+  position: absolute;
+  margin-top: 11%;
+  margin-right: 4%;
+  font-size: 14px;
+  right: 0;
+  background-color: white;
+  color: #454545;
+  padding: 10px;
+  top: 0;
+  box-shadow: 4px 4px 0px 1px #808080;
 }
 #help{
 	text-align: center;
@@ -317,10 +319,8 @@ body {
 #start{
   border: 1px solid black;
 }
-#help{
-  border: 1px solid black;
-  display: inline-block;
-}
+
 .btn{
   position: absolute;
+  left: 10%;
 }

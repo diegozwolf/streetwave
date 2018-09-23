@@ -16,7 +16,7 @@ $(function() {
     var line_3 = $('#line_3');
     var restart_div = $('#restart_div');
     var restart_btn = $('#restart');
-    var score = $('#score');
+    var score = $('#score_div');
     var position;
     var danger_zone = $('#danger-zone');
     var light = { 1: '#481a02', 2: 'yellow', 3: 'orange', 4: 'red' }
@@ -120,13 +120,41 @@ $(function() {
         }
     }
       anim_id = requestAnimationFrame(repeat);
+      var info = '/info'
+      var resp = true
+      var data;
+
+      function fillData(data){
+      $('.data_info').append(`
+        Año: <br>${ data.year },<br>
+        Sujeto: <br>${data.gender} de ${ data.age } años,<br>
+        Vehículo: <br>
+        ${ data.vehicle },<br>
+        Accidente cotnra: <br>${ data.object }
+        `)
+      }
 
      function repeat() {
 
-       if ( collision( car, danger_zone) ) {
-         anim_id =cancelAnimationFrame(anim_id);
-         stop = true
+       if ( collision( car, danger_zone)  ) {
+         if (resp) {
+           $('.data_info').empty();
+           $.ajax({
+             url: info,
+             success: function(data){
+               data = data;
+               console.log(data);
+               fillData(data)
+             },
+           });
+           resp = false
+         }
+         $("#data_div").css('display','block')
+       } else {
+          $("#data_div").css('display','none')
+         resp = true
        }
+
         // car_down(car_1);
 
         zones(danger_zone);
