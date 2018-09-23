@@ -12,6 +12,7 @@ void handleRoot();              // function prototypes for HTTP handlers
 void handleMotors();
 void handleNotFound();
 void handleGenericArgs();
+void handleAlert();
 int pwm_value,motor1=16,motor2=5,motor3=4,motor4=0;
 
 
@@ -43,6 +44,7 @@ void setup(void){
   }
 
   server.on("/", handleGenericArgs);               // Call the 'handleRoot' function when a client requests URI "/"
+  server.on("/alert", handleAlert); 
   server.on("/motors",HTTP_POST,handleMotors);
   server.onNotFound(handleNotFound);        // When a client requests an unknown URI (i.e. something other than "/"), call function "handleNotFound"
 
@@ -99,3 +101,20 @@ void handleGenericArgs() { //Handler
   server.send(204, "");       //Response to the HTTP request
 
 }
+
+
+void handleAlert(){
+  for (int i=0; i<3; i++){
+    analogWrite(motor1,400);
+    analogWrite(motor2,400);
+    analogWrite(motor3,400);
+    analogWrite(motor4,400);
+    delay(300);
+    analogWrite(motor1,0);
+    analogWrite(motor2,0);
+    analogWrite(motor3,0);
+    analogWrite(motor4,0);
+    delay(300);
+    }
+    server.send(204, "");       //Response to the HTTP request
+  }
