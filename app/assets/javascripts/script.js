@@ -2,7 +2,8 @@
 $(function() {
 
     var anim_id;
-
+    var spaces={motor1:0, motor2:0, motor3:0,motor4:0};
+    const URL = "157.253.226.176/motors"
     //saving dom objects to variables
     var container = $('#container');
     var car = $('#car');
@@ -17,6 +18,7 @@ $(function() {
     var restart_div = $('#restart_div');
     var restart_btn = $('#restart');
     var score = $('#score');
+    var position;
 
     //saving some initial setup
     var container_left = parseInt(container.css('left'));
@@ -54,6 +56,7 @@ $(function() {
                 move_down = requestAnimationFrame(down);
             }
         }
+
     });
 
     $(document).on('keyup', function(e) {
@@ -73,6 +76,10 @@ $(function() {
                 move_down = false;
             }
         }
+        measureSide( car, car_1, spaces)
+        $.get( "http://157.253.226.176/", spaces );
+        spaces={motor1:0, motor2:0, motor3:0,motor4:0};
+
     });
 
     function left() {
@@ -103,20 +110,32 @@ $(function() {
         }
     }
 
-    /* Move the cars and lines */
-    anim_id = requestAnimationFrame(repeat);
+    $("#container").on( "click", function() {
+    // anim_id = requestAnimationFrame(repeat);
+    })
 
-    function repeat() {
-        measureSide( car, car_1);
-        measureSide( car, car_2);
-        measureSide( car, car_3);
-        measureSide( car, car_4);
-        // if (collision(car, car_1) || collision(car, car_2) || collision(car, car_3)) {
-        //     stop_the_game();
-        //     return;
-        // }
+    function start(){
+        measureSide( car, car_1, spaces)
+        setTimeout(start(), 5000)
+    }
 
-        score_counter++;
+     function repeat() {
+         
+         measureSide( car, car_1, spaces);
+    //     measureSide( car, car_2, spaces);
+    //     measureSide( car, car_3, spaces);
+    //     measureSide( car, car_4, spaces);
+        console.log(spaces);
+        
+        
+    // $.get( "http://157.253.226.176/", spaces );
+    //     $.ajax({
+    //         type: "POST",
+    //         url: URL,
+    //         data: spaces,
+    //         dataType: "application/json"
+    //       });
+    //     score_counter++;
 
         // if (score_counter % 20 == 0) {
         //     score.text(parseInt(score.text()) + 1);
@@ -127,13 +146,14 @@ $(function() {
         // }
 
         car_down(car_1);
-        car_down(car_2);
-        car_down(car_3);
-        car_down(car_4);
+        // car_down(car_2);
+        // car_down(car_3);
+        // car_down(car_4);
 
-        line_down(line_1);
-        line_down(line_2);
-        line_down(line_3);
+        // line_down(line_1);
+        // line_down(line_2);
+        // line_down(line_3);
+        spaces={motor1:0, motor2:0, motor3:0,motor4:0};
 
         anim_id = requestAnimationFrame(repeat);
     }
@@ -194,21 +214,17 @@ $(function() {
 
     var height = $("#car").outerHeight(true) * 4;
 
-    function measureLeft( $div1, $div2 ){
+    function measureLeft( $div1, $div2, spaces ){
       let disLeft = $div1.offset().left - ($div2.offset().left + $div2.outerWidth(true));
       let range;
       if ( disLeft <= height ) {
         range = 100 - (( disLeft * 100 )/height);
       }
       if ( range > 0 ) {
-        console.log((range/100) * 700);
-        // $.ajax({
-        //   type: "POST",
-        //   url: url,
-        //   data: data,
-        //   success: success,
-        //   dataType: dataType
-        // });
+        let left = (range/100) * 700;
+        if( left > spaces.motor4 ) {
+            spaces.motor2 = left;
+        }
       }
     }
 
@@ -219,14 +235,10 @@ $(function() {
         range = 100 - (( disRight * 100 )/height);
       }
       if ( range > 0 ) {
-        console.log((range*100) * 700);
-        // $.ajax({
-        //   type: "POST",
-        //   url: url,
-        //   data: data,
-        //   success: success,
-        //   dataType: dataType
-        // });
+        let right = (range/100) * 700;
+        if( right > spaces.motor2 ) {
+            spaces.motor4 = right;
+        }
       }
     }
 
@@ -237,14 +249,10 @@ $(function() {
         range = 100 - (( disTop * 100 )/height);
       }
       if ( range > 0 ) {
-        console.log((range/100) * 700);
-        // $.ajax({
-        //   type: "POST",
-        //   url: url,
-        //   data: data,
-        //   success: success,
-        //   dataType: dataType
-        // });
+        let top = (range/100) * 700;
+        if( top > spaces.motor1 ) {
+            spaces.motor1 = top;
+        }
       }
     }
 
@@ -255,18 +263,14 @@ $(function() {
         range = 100 - (( disBot * 100 )/height);
       }
       if ( range > 0 ) {
-        console.log((range/100) * 700);
-        // $.ajax({
-        //   type: "POST",
-        //   url: url,
-        //   data: data,
-        //   success: success,
-        //   dataType: dataType
-        // });
+        let bottom = (range/100) * 700;
+        if( bottom > spaces.motor3 ) {
+            spaces.motor3 = bottom;
+        }
       }
     }
 
-    function measureSide( $div1, $div2 ){
+    function measureSide( $div1, $div2, spaces ){
       var x1 = $div1.offset().left;
       var y1 = $div1.offset().top;
       var h1 = $div1.outerHeight(true);
@@ -281,16 +285,19 @@ $(function() {
       var r2 = x2 + w2;
       if ( y1 < b2 && b1 > y2 ) {
         if ( x1 > r2 ) {
-          measureLeft( $div1, $div2 );
+          measureLeft( $div1, $div2, spaces );
         } else if ( r1 < x2 ) {
-          measureRight( $div1, $div2 );
+          measureRight( $div1, $div2, spaces );
         }
       } else if ( x1 < r2 && r1 > x2 ) {
         if ( y1 > b2 ) {
-          measureTop( $div1, $div2 );
+          measureTop( $div1, $div2, spaces );
         } else if ( b1 < y2 ) {
-          measureBottom( $div1, $div2 );
+          measureBottom( $div1, $div2, spaces );
         }
       }
+      console.log(spaces);
+
     }
 });
+

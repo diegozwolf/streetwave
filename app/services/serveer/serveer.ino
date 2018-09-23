@@ -11,6 +11,7 @@ ESP8266WebServer server(80);    // Create a webserver object that listens for HT
 void handleRoot();              // function prototypes for HTTP handlers
 void handleMotors();
 void handleNotFound();
+void handleGenericArgs();
 int pwm_value,motor1=16,motor2=5,motor3=4,motor4=0;
 
 
@@ -41,7 +42,7 @@ void setup(void){
     Serial.println("Error setting up MDNS responder!");
   }
 
-  server.on("/", handleRoot);               // Call the 'handleRoot' function when a client requests URI "/"
+  server.on("/", handleGenericArgs);               // Call the 'handleRoot' function when a client requests URI "/"
   server.on("/motors",HTTP_POST,handleMotors);
   server.onNotFound(handleNotFound);        // When a client requests an unknown URI (i.e. something other than "/"), call function "handleNotFound"
 
@@ -74,6 +75,27 @@ void handleMotors(){
   analogWrite(motor3,pwm_value);
   pwm_value = jObject["motor4"];
   analogWrite(motor4,pwm_value);
-  
+  server.sendHeader("Access-Control-Allow-Origin", "*");
   server.send(204,"");  
   }
+
+void handleGenericArgs() { //Handler
+  for (int i = 0; i < server.args(); i++) {
+    if (server.argName(i) == "motor1"){
+      analogWrite(motor1,server.arg(i).toInt());
+    }
+        if (server.argName(i) == "motor2"){
+      analogWrite(motor2,server.arg(i).toInt());
+    }
+        if (server.argName(i) == "motor3"){
+      analogWrite(motor3,server.arg(i).toInt());
+    }
+        if (server.argName(i) == "motor4"){
+      analogWrite(motor4,server.arg(i).toInt());
+    }
+    
+  } 
+
+  server.send(204, "");       //Response to the HTTP request
+
+}
