@@ -252,3 +252,75 @@ body {
     left: 100%;
     border-radius: 0px 5px 5px 0px;
 }
+
+.pad {
+  position: absolute;
+  /* border: 1px solid black; */
+  width: 200px;
+  top: 40%;
+  left: 20px;
+  display: grid;
+  grid-template-rows: 60px 60px 60px;
+}
+.p-up{
+  width: 50px;
+  height: 50px;
+  border: 1px solid black;
+  justify-self: center;
+  margin: 3px;
+  border-radius: 40px 40px 0 0;
+}
+.p-left{
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border: 1px solid black;
+  margin: 3px;
+  border-radius:  40px 0 0 40px;
+
+}
+.p-right{
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  border: 1px solid black;
+  margin: 3px;
+  border-radius:  0 40px 40px 0;
+}
+.p-down{
+  width: 50px;
+  height: 50px;
+  border: 1px solid black;
+  justify-self: center;
+  margin: 3px;
+  border-radius:  0 0 40px 40px;
+}
+.sides{
+  display: flex;
+  justify-content: space-around;
+}
+.p-back {
+  background: #481a02;
+}
+.arrow{
+  width: 20px;
+  height: 20px;
+}
+#danger-zone{
+  position: absolute;
+  height: 120%;
+  width: 100%;
+  margin-left: 0;
+  top: -300%;
+  background-color: rgba(255,0,0,0.9);
+}
+#start{
+  border: 1px solid black;
+}
+#help{
+  border: 1px solid black;
+  display: inline-block;
+}
+.btn{
+  position: absolute;
+}
