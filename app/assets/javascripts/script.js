@@ -1,6 +1,5 @@
-/* Arshad Muhammed */
-$(function() {
 
+$(function() {
     var anim_id;
     var spaces={motor1:0, motor2:0, motor3:0,motor4:0};
     const URL = "157.253.226.176/motors"
@@ -17,8 +16,10 @@ $(function() {
     var line_3 = $('#line_3');
     var restart_div = $('#restart_div');
     var restart_btn = $('#restart');
-    var score = $('#score');
+    var score = $('#score_div');
     var position;
+    var danger_zone = $('#danger-zone');
+    var light = { 1: '#481a02', 2: 'yellow', 3: 'orange', 4: 'red' }
 
     //saving some initial setup
     var container_left = parseInt(container.css('left'));
@@ -40,9 +41,6 @@ $(function() {
     var move_up = false;
     var move_down = false;
 
-    /* ------------------------------GAME CODE STARTS HERE------------------------------------------- */
-
-    /* Move the cars */
     $(document).on('keydown', function(e) {
         if (game_over === false) {
             var key = e.keyCode;
@@ -78,6 +76,18 @@ $(function() {
         }
         measureSide( car, car_1, spaces)
         $.get( "http://157.253.226.176/", spaces );
+        if (spaces.motor1 == 0) {
+          $('.p-up').css('background', '#481a02')
+        }
+        if (spaces.motor2 == 0 ){
+          $('.p-left').css('background', '#481a02')
+        }
+        if (spaces.motor3 == 0 ){
+          $('.p-down').css('background', '#481a02')
+        }
+        if (spaces.motor4 == 0 ){
+          $('.p-right').css('background', '#481a02')
+        }
         spaces={motor1:0, motor2:0, motor3:0,motor4:0};
 
     });
@@ -109,53 +119,55 @@ $(function() {
             move_down = requestAnimationFrame(down);
         }
     }
+      anim_id = requestAnimationFrame(repeat);
+      var info = '/info'
+      var resp = true
+      var data;
 
-    $("#container").on( "click", function() {
-    // anim_id = requestAnimationFrame(repeat);
-    })
-
-    function start(){
-        measureSide( car, car_1, spaces)
-        setTimeout(start(), 5000)
-    }
+      function fillData(data){
+      $('.data_info').append(`
+        Año: <br>${ data.year },<br>
+        Sujeto: <br>${data.gender} de ${ data.age } años,<br>
+        Vehículo: <br>
+        ${ data.vehicle },<br>
+        Accidente cotnra: <br>${ data.object }
+        `)
+      }
 
      function repeat() {
-         
-         measureSide( car, car_1, spaces);
-    //     measureSide( car, car_2, spaces);
-    //     measureSide( car, car_3, spaces);
-    //     measureSide( car, car_4, spaces);
-        console.log(spaces);
-        
-        
-    // $.get( "http://157.253.226.176/", spaces );
-    //     $.ajax({
-    //         type: "POST",
-    //         url: URL,
-    //         data: spaces,
-    //         dataType: "application/json"
-    //       });
-    //     score_counter++;
 
-        // if (score_counter % 20 == 0) {
-        //     score.text(parseInt(score.text()) + 1);
-        // }
-        // if (score_counter % 500 == 0) {
-        //     speed++;
-        //     line_speed++;
-        // }
+       if ( collision( car, danger_zone)  ) {
+         if (resp) {
+           $.get( "http://157.253.226.176/alert" );
+           $('.data_info').empty();
+           $.ajax({
+             url: info,
+             success: function(data){
+               data = data;
+               console.log(data);
+               fillData(data)
+             },
+           });
+           resp = false
+         }
+         $("#data_div").css('display','block')
+       } else {
+          $("#data_div").css('display','none')
+         resp = true
+       }
 
-        car_down(car_1);
-        // car_down(car_2);
-        // car_down(car_3);
-        // car_down(car_4);
+        // car_down(car_1);
 
-        // line_down(line_1);
-        // line_down(line_2);
-        // line_down(line_3);
-        spaces={motor1:0, motor2:0, motor3:0,motor4:0};
+        zones(danger_zone);
+        line_down(line_1);
+        line_down(line_2);
+        line_down(line_3);
 
+        if (stop) {
+
+        }
         anim_id = requestAnimationFrame(repeat);
+
     }
 
     function car_down(car) {
@@ -175,20 +187,29 @@ $(function() {
         }
         line.css('top', line_current_top + line_speed);
     }
+    function zones(line) {
+      var line_current_top = parseInt(line.css('top'));
+        if (line_current_top < 2500) {
+            line_current_top += 5;
+        } else {
+          var line_current_top = -1500;
+        }
+        line.css('top', line_current_top);
 
+    }
     restart_btn.click(function() {
         location.reload();
     });
 
     function stop_the_game() {
         game_over = true;
-        cancelAnimationFrame(anim_id);
-        cancelAnimationFrame(move_right);
-        cancelAnimationFrame(move_left);
-        cancelAnimationFrame(move_up);
-        cancelAnimationFrame(move_down);
-        restart_div.slideDown();
-        restart_btn.focus();
+        cancelAnimationFrame(zones);
+        cancelAnimationFrame(line_down);
+        // cancelAnimationFrame(move_left);
+        // cancelAnimationFrame(move_up);
+        // cancelAnimationFrame(move_down);
+        // restart_div.slideDown();
+        // restart_btn.focus();
     }
 
     /* ------------------------------GAME CODE ENDS HERE------------------------------------------- */
@@ -196,7 +217,7 @@ $(function() {
 
     function collision($div1, $div2) {
         var x1 = $div1.offset().left;
-        var y1 = $div1.offset().top;
+        var y1 = $div1.offset().top+20;
         var h1 = $div1.outerHeight(true);
         var w1 = $div1.outerWidth(true);
         var b1 = y1 + h1;
@@ -222,6 +243,8 @@ $(function() {
       }
       if ( range > 0 ) {
         let left = (range/100) * 700;
+        var arr = $('.p-left')
+        setLight(range/100, arr)
         if( left > spaces.motor4 ) {
             spaces.motor2 = left;
         }
@@ -236,6 +259,8 @@ $(function() {
       }
       if ( range > 0 ) {
         let right = (range/100) * 700;
+        var arr = $('.p-right')
+        setLight(range/100, arr)
         if( right > spaces.motor2 ) {
             spaces.motor4 = right;
         }
@@ -250,6 +275,8 @@ $(function() {
       }
       if ( range > 0 ) {
         let top = (range/100) * 700;
+        var arr = $('.p-up')
+        setLight(range/100, arr)
         if( top > spaces.motor1 ) {
             spaces.motor1 = top;
         }
@@ -264,9 +291,23 @@ $(function() {
       }
       if ( range > 0 ) {
         let bottom = (range/100) * 700;
+        var arr = $('.p-down')
+        setLight(range/100, arr)
         if( bottom > spaces.motor3 ) {
             spaces.motor3 = bottom;
         }
+      }
+    }
+
+    function setLight(range, arrow ){
+      if ( range < 0.25 ) {
+        arrow.css('background',light[1])
+      } else if (range < 0.5) {
+        arrow.css('background',light[2])
+      } else if ( range < 0.75){
+        arrow.css('background',light[3])
+      } else if (range < 1) {
+        arrow.css('background',light[4])
       }
     }
 
@@ -299,4 +340,14 @@ $(function() {
       console.log(spaces);
 
     }
+    var stop = false;
+    $('#start').on('click',function blop(){
+      if (!stop) {
+        anim_id =cancelAnimationFrame(anim_id);
+        stop = true
+      } else {
+        anim_id = requestAnimationFrame(repeat)
+        stop = false
+      }
+    })
 });
