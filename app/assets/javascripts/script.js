@@ -2,7 +2,7 @@
 $(function() {
     var anim_id;
     var spaces={motor1:0, motor2:0, motor3:0,motor4:0};
-    const URL = "157.253.226.176/motors"
+    const URL = "192.168.43.11/motors"
     //saving dom objects to variables
     var container = $('#container');
     var car = $('#car');
@@ -75,7 +75,7 @@ $(function() {
             }
         }
         measureSide( car, car_1, spaces)
-        $.get( "http://157.253.226.176/", spaces );
+        $.get( "http://192.168.43.11/", spaces );
         if (spaces.motor1 == 0) {
           $('.p-up').css('background', '#481a02')
         }
@@ -138,7 +138,7 @@ $(function() {
 
        if ( collision( car, danger_zone)  ) {
          if (resp) {
-           $.get( "http://157.253.226.176/alert" );
+           $.get( "http://192.168.43.11/alert" );
            $('.data_info').empty();
            $.ajax({
              url: info,
